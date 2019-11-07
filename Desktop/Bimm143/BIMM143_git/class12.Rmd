@@ -22,13 +22,56 @@ get.pdb("1hsg")
 pdb <- read.pdb("1hsg.pdb")
 protein <- atom.select(pdb, "protein", value = TRUE)
 write.pdb(protein, file = "1hsg_protein.pdb")
+protein
 ```
 
 and for the ligand
 ```{r}
 ligand <- atom.select(pdb, "ligand", value = TRUE)
 write.pdb(ligand, file = "1hsg_ligand.pdb")
+ligand
+
 ```
 
+Section 2: Docking ligands into HIV-1 protease
+For this section, we will use the program called Autodock Vina [4]. Autodock Vina is a fast docking program that requires minimal user intervention and is often employed for high- throughput virtual screening. We will run it from the command line.
+On Macs you should now be able to run this command and see the associated help for the vina program:~/Downloads/autodock_vina_1_1_2_mac/bin/vina --help
+
+Worked with the code below, had to change directory for text to work
+Mayens-MacBook-Pro:~ evaomar$ cd ~/Desktop/Bimm143/BIMM143_git/
+Mayens-MacBook-Pro:BIMM143_git evaomar$ ~/Downloads/autodock_vina_1_1_2_mac/bin/vina --config config.txt --log log.txt
 
 
+
+
+Once the run is complete, you should have two new files all.pdbqt, which contains all the docked modes, and log.txt, which contains a table of calculated affinities based on AutoDock Vina's scoring function [4]. The best docked mode, according to AutoDock Vina, is the first entry in all.pdbqt.
+2.3 Inspecting your docking results
+In order to visualize the docks and compare to the crystal conformation of the ligand we will process the all.pdbqt to a PDB format file that can be loaded into VMD. To do this we will use R and the Bio3D package.
+
+```{r}
+library(bio3d)
+res <- read.pdb("all.pdbqt", multi=TRUE)
+write.pdb(res, "results.pdb")
+```
+
+ Q4: Qualitatively, how good are the docks? Is the crystal binding mode reproduced? Is it the best conformation according to AutoDock Vina?
+ - 
+ 
+ 
+To assess the results quantitatively we will calculate the RMSD (root mean square distance)
+between each of the docking results and the known crystal structure using the bio3d package. Back in RStudio read the original ligand with added hydrogens that you produced earlier and
+use the rmsd() function to compare to your docking results.
+
+```{r}
+# res <- read.pdb("all.pdbqt", multi=TRUE)
+ori <- read.pdb("ligand.pdbqt")
+rmsd(ori, res)
+```
+
+ Q5: Quantitatively how good are the docks? Is the crystal binding mode reproduced within 1Å RMSD for all atoms?
+ -
+Q6: How would you determine the RMSD for heavy atoms only (i.e. non hydrogen atoms)? HINT: The atom.
+-
+ 
+ 
+ 
